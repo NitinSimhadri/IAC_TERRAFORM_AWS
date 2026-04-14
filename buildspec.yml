@@ -1,9 +1,13 @@
 version: 0.2
  
+env:
+  variables:
+    ACTION: "plan"   # default (can be overridden in CodeBuild)
+ 
 phases:
   install:
     commands:
-      - echo Installing Terraform
+      - echo "Installing Terraform..."
       - yum install -y unzip
       - curl -O https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
       - unzip terraform_1.6.0_linux_amd64.zip
@@ -12,17 +16,22 @@ phases:
  
   pre_build:
     commands:
-      - echo Initializing Terraform
+      - echo "Initializing Terraform..."
       - terraform init -reconfigure
  
   build:
     commands:
-      - echo Running Terraform Plan
-      - terraform plan -out=tfplan
+      - echo "Running Terraform action: $ACTION"
  
-      - echo "Plan successful, applying changes..."
-      - terraform apply -auto-approve tfplan
+      - |
+        if [ "$ACTION" = "apply" ]; then
+          echo "Applying infrastructure..."
+          terraform apply -auto-approve
+        else
+          echo "Running plan..."
+          terraform plan
+        fi
  
   post_build:
     commands:
-      - echo Build completed successfully
+      - echo "Build completed successfully"
