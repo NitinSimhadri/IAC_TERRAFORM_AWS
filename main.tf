@@ -11,7 +11,7 @@ module "s3" {
 module "ec2" {
   source         = "./modules/ec2"
   ami            = "ami-03e9fa355358e045d"   # Ubuntu AMI (change if needed)
-  instance_type  = "t3.micro"
+  instance_type  = "t3.small"
   subnet_id      = module.vpc.subnet_id
 }
  
